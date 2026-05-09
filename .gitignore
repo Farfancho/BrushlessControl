@@ -1,0 +1,26 @@
+# Artefactos de compilación
+build/
+dist/
+
+# Archivos del proyecto MPLAB X
+nbproject/
+Makefile
+*.mc3
+mcc-manifest-*.yml
+
+# Binarios y salidas comunes
+*.elf
+*.hex
+*.map
+*.lst
+*.o
+*.obj
+*.d
+*.p1
+
+# Temporales / editor
+*.log
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
