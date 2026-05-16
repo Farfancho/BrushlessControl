@@ -19,7 +19,6 @@ typedef struct {
     int32_t position;
     int32_t target;
     motor_dir_t direction;
-    bool moving;
     uint16_t dutyCycle;//este valor debe ser flotante (?) 
 }motor_status_t;
 
@@ -27,7 +26,6 @@ void Motor_init(volatile motor_status_t *motor,
     int32_t position,
     int32_t target,
     motor_dir_t direction,
-    bool moving,
     uint16_t dutyCycle
 );
 

@@ -8,16 +8,23 @@
 #ifndef SENSORS_H
 #define	SENSORS_H
 
-#ifdef	__cplusplus
-extern "C" {
+
+#ifdef __cplusplus
+extern "C" 
 #endif
 
 
+#include <stdint.h>
+#include <stdbool.h>
+#include "../mcc_generated_files/adcc.h"
 
+typedef struct {
+    uint16_t feedback;
+    uint16_t analogInput;    
+}sensors_status_t;
 
-#ifdef	__cplusplus
-}
-#endif
+void setFeedback (adcc_channel_t channel, volatile sensors_status_t *sensor);
+void setAnalogInput (adcc_channel_t channel, volatile sensors_status_t *sensor);
 
 #endif	/* SENSORS_H */
 

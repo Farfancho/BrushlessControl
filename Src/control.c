@@ -2,6 +2,8 @@
 
 #include "control.h"
 
+//es posible que toque cambiar el enfoque a ecuaciones en diferencias
+
 void params_init(volatile params_t *params,
         uint16_t Ki,
         uint16_t Kp,
@@ -33,9 +35,10 @@ volatile params_t *params = &paramsData;
 volatile components_t componentsData;
 volatile components_t *components = &componentsData;
 
-int32_t Motor_GetError(volatile params_t *params){
+int32_t Motor_GetError(volatile params_t *params){ //serial
     return params->Error;
 }
+
 void Motor_SetError(volatile motor_status_t *motor, volatile params_t *params){
     params->Error = motor->target - motor->position;
 }
@@ -43,7 +46,7 @@ void Motor_SetError(volatile motor_status_t *motor, volatile params_t *params){
 void SetIntegralComponent(params_t *params, components_t *components){
     components->integral += params->Ki * params->Error * params->Ts;
     //creo que debo limitar el valor que puede tomar el componente integral para
-    //evitar saturación
+    //evitar saturaciï¿½n
 }
 
 void SetDerivativeComponent(params_t *params, components_t *components){

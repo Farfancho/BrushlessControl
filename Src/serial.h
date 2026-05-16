@@ -8,6 +8,7 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
+#include "../mcc_generated_files/eusart1.h"
     
 typedef enum {
     CMD_NONE,
