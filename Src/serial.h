@@ -25,6 +25,9 @@ uint16_t decodeGcode(char *input);
 void SerialSendData(int16_t value);
 void Serial_ProcessCommand(char *input);
 
+void SerialSendPlot4(uint16_t v1, uint16_t v2, uint16_t v3, uint16_t v4);
+static void SerialWriteByte(uint8_t byte);
+
 #ifdef __cplusplus
 }
 #endif
