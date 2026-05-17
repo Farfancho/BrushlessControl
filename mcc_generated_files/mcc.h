@@ -58,6 +58,11 @@
 #include "pwm6.h"
 #include "tmr2.h"
 #include "eusart1.h"
+#include "../Src/control.h"
+#include "../Src/motor.h"
+#include "../Src/serial.h"
+#include "../Src/task.h"
+#include "../Src/sensors.h"
 
 
 

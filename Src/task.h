@@ -9,15 +9,21 @@
 #define	TASK_H
 
 #ifdef	__cplusplus
-extern "C" {
+extern "C" 
 #endif
+    
+typedef enum
+{
+    SETPOINT_SERIAL = 0,
+    SETPOINT_ANALOG = 1
+} setpoint_mode_t;
 
+extern volatile setpoint_mode_t setpoint_mode;
 
+void App_Init(void);
+void App_ControlTask(void);
+void App_BackgroundTask(void);
 
-
-#ifdef	__cplusplus
-}
-#endif
-
+    
 #endif	/* TASK_H */
 

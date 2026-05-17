@@ -53,6 +53,9 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include "../Src/control.h"
+#include "../Src/motor.h"
+#include "../Src/sensors.h"
 
 #ifdef __cplusplus  // Provide C++ Compatibility
 

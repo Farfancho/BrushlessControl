@@ -10,39 +10,55 @@ extern "C"
 #include "motor.h"
 
 typedef struct {
-    uint16_t Ki;//hay que escalarlos x1000 maybe
-    uint16_t Kp;
-    uint16_t Kd;
+    int32_t KiTs_q;
+    int32_t Kp_q;
+    int32_t KdDivTs_q;
     int32_t Error;
     int32_t prevError;
     int32_t Ts;
-}params_t;
+} params_t;
 
 typedef struct {
-    int32_t integral; //int32_t
+    int32_t integral; 
     int32_t derivative;
     int32_t proportional;
 }components_t;
 
 void params_init(volatile params_t *params,
-    uint16_t Ki,
-    uint16_t Kp,
-    uint16_t Kd,
+    int32_t Ki_q,
+    int32_t Kp_q,
+    int32_t Kd_q,
     int32_t Error,
     int32_t prevError,
-    int32_t Ts);
+    int32_t Ts_us);
+
+extern volatile params_t paramsData;
+extern volatile params_t *params;
+
+extern volatile components_t componentsData;
+extern volatile components_t *components;
+
+void Control_SetKp(int32_t Kp_q);
+void Control_SetKi(int32_t Ki_q);
+void Control_SetKd(int32_t Kd_q);
+void Control_SetTs(int32_t Ts_us);
+void Control_ResetIntegrator(void);
 
 void components_init(volatile components_t *components,
-    int32_t integral,
-    int32_t derivative,
-    int32_t proportional);
+                     int32_t integral,
+                     int32_t derivative,
+                     int32_t proportional);
 
 int32_t Motor_GetError(volatile params_t *params);
-void Motor_SetError(volatile motor_status_t *motor, volatile params_t *params);
-void SetIntegralComponent(params_t *params, components_t *components);
-void SetDerivativeComponent(params_t *params, components_t *components);
-void SetProportionalComponent(params_t *params, components_t *components);
-float GetPIDOutput(components_t *components);
+
+void Motor_SetError(volatile motor_status_t *motor,
+                    volatile params_t *params);
+
+void SetIntegralComponent(volatile params_t *params, volatile components_t *components);
+void SetDerivativeComponent(volatile params_t *params, volatile components_t *components);
+void SetProportionalComponent(volatile params_t *params, volatile components_t *components);
+
+int32_t GetPIDOutput(volatile components_t *components);
 
 #endif /* CONTROL_H */
 /*

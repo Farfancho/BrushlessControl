@@ -23,8 +23,20 @@ typedef struct {
     uint16_t analogInput;    
 }sensors_status_t;
 
+extern volatile sensors_status_t sensor_data;
+extern volatile sensors_status_t *sensor;
+
+void sensorsInit(volatile sensors_status_t *sensor,
+                 uint16_t feedback,
+                 uint16_t analogInput);
+
 void setFeedback (adcc_channel_t channel, volatile sensors_status_t *sensor);
 void setAnalogInput (adcc_channel_t channel, volatile sensors_status_t *sensor);
+uint16_t getFeedback (volatile sensors_status_t *sensor);
+uint16_t getAnalogInput (volatile sensors_status_t *sensor);
 
 #endif	/* SENSORS_H */
 
+/**
+ End of File
+*/

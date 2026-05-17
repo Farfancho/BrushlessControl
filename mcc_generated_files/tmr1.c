@@ -168,10 +168,19 @@ void TMR1_ISR(void)
     PIR4bits.TMR1IF = 0;
     TMR1_WriteTimer(timer1ReloadVal);
 
-    if(TMR1_InterruptHandler)
+    /*
+     read adc
+     * update position
+     * calcular error
+     * calcular PID
+     * aplicar PWM y DIR
+     
+     */
+     if (TMR1_InterruptHandler)
     {
         TMR1_InterruptHandler();
     }
+  
 }
 
 

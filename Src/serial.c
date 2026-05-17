@@ -1,4 +1,8 @@
+#include <xc.h>
 #include "serial.h"
+#include "control.h"
+#include "task.h"
+#include <stdlib.h>
 //configurar baudrate de la uart
 
 char rx_buffer[32];
@@ -23,7 +27,7 @@ void SerialSendData(int16_t value){//maybe unused, but it derives to the SerialS
 }
 
 
-static void SerialWriteByte(uint8_t byte)
+void SerialWriteByte(uint8_t byte)
 {
     while (!EUSART1_is_tx_ready());
     EUSART1_Write(byte);
@@ -77,22 +81,28 @@ void Serial_ProcessCommand(char *input)
     {
         case CMD_i:
             //change the integral constant
+            Control_SetKi(atoi(&input[1]));
             break;
 
         case CMD_p:
             //change the proportional constant
+            Control_SetKp(atoi(&input[1]));
             break;
         case CMD_d:
             //change the derivative constant
+            Control_SetKd(atoi(&input[1]));
             break;
         case CMD_M:
             //change setpoint via Serial input
+            setpoint_mode = SETPOINT_SERIAL;
+            motor->target = atoi(&input[1]);
             break;
         case CMD_S:
-            //emergency Stop
+            //emergency Stop maybe not used 
             break;
         case CMD_A:
             //Toggle Input type
+            setpoint_mode = SETPOINT_ANALOG;
             break;
         case CMD_NONE:
         default:
