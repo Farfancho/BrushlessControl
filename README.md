@@ -199,7 +199,7 @@ En modo serial, el comando `Mxxx` define directamente el setpoint del controlado
 En modo analógico, el setpoint se toma desde el potenciómetro conectado al canal `AnSetpoint`.
 
 > [!TIP]
-> Se encontró que se puede implementar un control tipo P con kp = 200 - 250 sin oscilaciones y un tiempo de respuesta razonable
+> Se encontró que se puede implementar un control tipo P y llegar a un comportamiento sin oscilaciones y con un tiempo de respuesta razonable
 
 ## Estado actual del desarrollo
 
