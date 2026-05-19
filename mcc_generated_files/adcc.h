@@ -88,8 +88,8 @@ typedef __uint24 uint24_t;
 
 typedef enum
 {
-    AnalogIN =  0x10,
-    SetPoint =  0x11,
+    AnSetpoint =  0x10,
+    Position =  0x11,
     channel_Vss =  0x3B,
     channel_Temp_Sensor =  0x3C,
     channel_DAC1_Output =  0x3D,

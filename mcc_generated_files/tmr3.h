@@ -1,17 +1,17 @@
 /**
-  TMR1 Generated Driver API Header File
+  TMR3 Generated Driver API Header File
 
   @Company
     Microchip Technology Inc.
 
   @File Name
-    tmr1.h
+    tmr3.h
 
   @Summary
-    This is the generated header file for the TMR1 driver using PIC10 / PIC12 / PIC16 / PIC18 MCUs
+    This is the generated header file for the TMR3 driver using PIC10 / PIC12 / PIC16 / PIC18 MCUs
 
   @Description
-    This header file provides APIs for driver for TMR1.
+    This header file provides APIs for driver for TMR3.
     Generation Information :
         Product Revision  :  PIC10 / PIC12 / PIC16 / PIC18 MCUs - 1.81.8
         Device            :  PIC16F18426
@@ -44,8 +44,8 @@
     SOFTWARE.
 */
 
-#ifndef TMR1_H
-#define TMR1_H
+#ifndef TMR3_H
+#define TMR3_H
 
 /**
   Section: Included Files
@@ -59,21 +59,19 @@
     extern "C" {
 
 #endif
-        
-volatile bool controlTickFlag = false;
 
 
 /**
-  Section: TMR1 APIs
+  Section: TMR3 APIs
 */
 
 /**
   @Summary
-    Initializes the TMR1
+    Initializes the TMR3
 
   @Description
-    This routine initializes the TMR1.
-    This routine must be called before any other TMR1 routine is called.
+    This routine initializes the TMR3.
+    This routine must be called before any other TMR3 routine is called.
     This routine should only be called once during system initialization.
 
   @Preconditions
@@ -92,25 +90,25 @@ volatile bool controlTickFlag = false;
     <code>
     main()
     {
-        // Initialize TMR1 module
-        TMR1_Initialize();
+        // Initialize TMR3 module
+        TMR3_Initialize();
 
         // Do something else...
     }
     </code>
 */
-void TMR1_Initialize(void);
+void TMR3_Initialize(void);
 
 /**
   @Summary
-    This function starts the TMR1.
+    This function starts the TMR3.
 
   @Description
-    This function starts the TMR1 operation.
-    This function must be called after the initialization of TMR1.
+    This function starts the TMR3 operation.
+    This function must be called after the initialization of TMR3.
 
   @Preconditions
-    Initialize  the TMR1 before calling this function.
+    Initialize  the TMR3 before calling this function.
 
   @Param
     None
@@ -120,26 +118,26 @@ void TMR1_Initialize(void);
 
   @Example
     <code>
-    // Initialize TMR1 module
+    // Initialize TMR3 module
 
-    // Start TMR1
-    TMR1_StartTimer();
+    // Start TMR3
+    TMR3_StartTimer();
 
     // Do something else...
     </code>
 */
-void TMR1_StartTimer(void);
+void TMR3_StartTimer(void);
 
 /**
   @Summary
-    This function stops the TMR1.
+    This function stops the TMR3.
 
   @Description
-    This function stops the TMR1 operation.
-    This function must be called after the start of TMR1.
+    This function stops the TMR3 operation.
+    This function must be called after the start of TMR3.
 
   @Preconditions
-    Initialize  the TMR1 before calling this function.
+    Initialize  the TMR3 before calling this function.
 
   @Param
     None
@@ -149,67 +147,67 @@ void TMR1_StartTimer(void);
 
   @Example
     <code>
-    // Initialize TMR1 module
+    // Initialize TMR3 module
 
-    // Start TMR1
-    TMR1_StartTimer();
+    // Start TMR3
+    TMR3_StartTimer();
 
     // Do something else...
 
-    // Stop TMR1;
-    TMR1_StopTimer();
+    // Stop TMR3;
+    TMR3_StopTimer();
     </code>
 */
-void TMR1_StopTimer(void);
+void TMR3_StopTimer(void);
 
 /**
   @Summary
-    Reads the TMR1 register.
+    Reads the TMR3 register.
 
   @Description
-    This function reads the TMR1 register value and return it.
+    This function reads the TMR3 register value and return it.
 
   @Preconditions
-    Initialize  the TMR1 before calling this function.
+    Initialize  the TMR3 before calling this function.
 
   @Param
     None
 
   @Returns
-    This function returns the current value of TMR1 register.
+    This function returns the current value of TMR3 register.
 
   @Example
     <code>
-    // Initialize TMR1 module
+    // Initialize TMR3 module
 
-    // Start TMR1
-    TMR1_StartTimer();
+    // Start TMR3
+    TMR3_StartTimer();
 
-    // Read the current value of TMR1
-    if(0 == TMR1_ReadTimer())
+    // Read the current value of TMR3
+    if(0 == TMR3_ReadTimer())
     {
         // Do something else...
 
         // Reload the TMR value
-        TMR1_Reload();
+        TMR3_Reload();
     }
     </code>
 */
-uint16_t TMR1_ReadTimer(void);
+uint16_t TMR3_ReadTimer(void);
 
 /**
   @Summary
-    Writes the TMR1 register.
+    Writes the TMR3 register.
 
   @Description
-    This function writes the TMR1 register.
-    This function must be called after the initialization of TMR1.
+    This function writes the TMR3 register.
+    This function must be called after the initialization of TMR3.
 
   @Preconditions
-    Initialize  the TMR1 before calling this function.
+    Initialize  the TMR3 before calling this function.
 
   @Param
-    timerVal - Value to write into TMR1 register.
+    timerVal - Value to write into TMR3 register.
 
   @Returns
     None
@@ -221,31 +219,31 @@ uint16_t TMR1_ReadTimer(void);
 
     while(1)
     {
-        // Read the TMR1 register
-        if(ZERO == TMR1_ReadTimer())
+        // Read the TMR3 register
+        if(ZERO == TMR3_ReadTimer())
         {
             // Do something else...
 
-            // Write the TMR1 register
-            TMR1_WriteTimer(PERIOD);
+            // Write the TMR3 register
+            TMR3_WriteTimer(PERIOD);
         }
 
         // Do something else...
     }
     </code>
 */
-void TMR1_WriteTimer(uint16_t timerVal);
+void TMR3_WriteTimer(uint16_t timerVal);
 
 /**
   @Summary
-    Reload the TMR1 register.
+    Reload the TMR3 register.
 
   @Description
-    This function reloads the TMR1 register.
-    This function must be called to write initial value into TMR1 register.
+    This function reloads the TMR3 register.
+    This function must be called to write initial value into TMR3 register.
 
   @Preconditions
-    Initialize  the TMR1 before calling this function.
+    Initialize  the TMR3 before calling this function.
 
   @Param
     None
@@ -257,31 +255,31 @@ void TMR1_WriteTimer(uint16_t timerVal);
     <code>
     while(1)
     {
-        if(TMR1IF)
+        if(TMR3IF)
         {
             // Do something else...
 
-            // clear the TMR1 interrupt flag
-            TMR1IF = 0;
+            // clear the TMR3 interrupt flag
+            TMR3IF = 0;
 
-            // Reload the initial value of TMR1
-            TMR1_Reload();
+            // Reload the initial value of TMR3
+            TMR3_Reload();
         }
     }
     </code>
 */
-void TMR1_Reload(void);
+void TMR3_Reload(void);
 
 /**
   @Summary
-    Starts the single pulse acquisition in TMR1 gate operation.
+    Starts the single pulse acquisition in TMR3 gate operation.
 
   @Description
-    This function starts the single pulse acquisition in TMR1 gate operation.
-    This function must be used when the TMR1 gate is enabled.
+    This function starts the single pulse acquisition in TMR3 gate operation.
+    This function must be used when the TMR3 gate is enabled.
 
   @Preconditions
-    Initialize  the TMR1 with gate enable before calling this function.
+    Initialize  the TMR3 with gate enable before calling this function.
 
   @Param
     None
@@ -294,33 +292,33 @@ void TMR1_Reload(void);
     uint16_t xVal;
     uint16_t yVal;
 
-    // enable TMR1 singlepulse mode
-    TMR1_StartSinglePulseAcquistion();
+    // enable TMR3 singlepulse mode
+    TMR3_StartSinglePulseAcquistion();
 
-    // check TMR1 gate status
-    if(TMR1_CheckGateValueStatus()== 0)
-        xVal = TMR1_ReadTimer();
+    // check TMR3 gate status
+    if(TMR3_CheckGateValueStatus()== 0)
+        xVal = TMR3_ReadTimer();
 
     // wait untill gate interrupt occured
-    while(TMR1GIF == 0)
+    while(TMR3GIF == 0)
     {
     }
 
-    yVal = TMR1_ReadTimer();
+    yVal = TMR3_ReadTimer();
     </code>
 */
-void TMR1_StartSinglePulseAcquisition(void);
+void TMR3_StartSinglePulseAcquisition(void);
 
 /**
   @Summary
     Check the current state of Timer1 gate.
 
   @Description
-    This function reads the TMR1 gate value and return it.
-    This function must be used when the TMR1 gate is enabled.
+    This function reads the TMR3 gate value and return it.
+    This function must be used when the TMR3 gate is enabled.
 
   @Preconditions
-    Initialize  the TMR1 with gate enable before calling this function.
+    Initialize  the TMR3 with gate enable before calling this function.
 
   @Param
     None
@@ -333,22 +331,22 @@ void TMR1_StartSinglePulseAcquisition(void);
     uint16_t xVal;
     uint16_t yVal;
 
-    // enable TMR1 singlepulse mode
-    TMR1_StartSinglePulseAcquistion();
+    // enable TMR3 singlepulse mode
+    TMR3_StartSinglePulseAcquistion();
 
-    // check TMR1 gate status
-    if(TMR1_CheckGateValueStatus()== 0)
-        xVal = TMR1_ReadTimer();
+    // check TMR3 gate status
+    if(TMR3_CheckGateValueStatus()== 0)
+        xVal = TMR3_ReadTimer();
 
     // wait untill gate interrupt occured
-    while(TMR1IF == 0)
+    while(TMR3IF == 0)
     {
     }
 
-    yVal = TMR1_ReadTimer();
+    yVal = TMR3_ReadTimer();
     </code>
 */
-uint8_t TMR1_CheckGateValueStatus(void);
+uint8_t TMR3_CheckGateValueStatus(void);
 
 /**
   @Summary
@@ -358,7 +356,7 @@ uint8_t TMR1_CheckGateValueStatus(void);
     Timer Interrupt Service Routine is called by the Interrupt Manager.
 
   @Preconditions
-    Initialize  the TMR1 module with interrupt before calling this ISR.
+    Initialize  the TMR3 module with interrupt before calling this ISR.
 
   @Param
     None
@@ -366,7 +364,7 @@ uint8_t TMR1_CheckGateValueStatus(void);
   @Returns
     None
 */
-void TMR1_ISR(void);
+void TMR3_ISR(void);
 
 /**
   @Summary
@@ -376,7 +374,7 @@ void TMR1_ISR(void);
     This sets the function to be called during the ISR
 
   @Preconditions
-    Initialize  the TMR1 module with interrupt before calling this.
+    Initialize  the TMR3 module with interrupt before calling this.
 
   @Param
     Address of function to be set
@@ -384,7 +382,7 @@ void TMR1_ISR(void);
   @Returns
     None
 */
- void TMR1_SetInterruptHandler(void (* InterruptHandler)(void));
+ void TMR3_SetInterruptHandler(void (* InterruptHandler)(void));
 
 /**
   @Summary
@@ -394,7 +392,7 @@ void TMR1_ISR(void);
     This is a function pointer to the function that will be called during the ISR
 
   @Preconditions
-    Initialize  the TMR1 module with interrupt before calling this isr.
+    Initialize  the TMR3 module with interrupt before calling this isr.
 
   @Param
     None
@@ -402,7 +400,7 @@ void TMR1_ISR(void);
   @Returns
     None
 */
-extern void (*TMR1_InterruptHandler)(void);
+extern void (*TMR3_InterruptHandler)(void);
 
 /**
   @Summary
@@ -412,7 +410,7 @@ extern void (*TMR1_InterruptHandler)(void);
     This is the default Interrupt Handler function
 
   @Preconditions
-    Initialize  the TMR1 module with interrupt before calling this isr.
+    Initialize  the TMR3 module with interrupt before calling this isr.
 
   @Param
     None
@@ -420,7 +418,7 @@ extern void (*TMR1_InterruptHandler)(void);
   @Returns
     None
 */
-void TMR1_DefaultInterruptHandler(void);
+void TMR3_DefaultInterruptHandler(void);
 
 #ifdef __cplusplus  // Provide C++ Compatibility
 
@@ -428,7 +426,7 @@ void TMR1_DefaultInterruptHandler(void);
 
 #endif
 
-#endif // TMR1_H
+#endif // TMR3_H
 /**
  End of File
 */

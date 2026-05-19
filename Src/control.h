@@ -1,117 +1,89 @@
-#ifndef CONTROL_H
-#define CONTROL_H
+/* 
+ * File:   control.h
+ * Author: alejandro
+ *
+ * Created on May 17, 2026, 4:42 PM
+ */
 
-#ifdef __cplusplus
-extern "C" 
+#ifndef CONTROL_H
+#define	CONTROL_H
+
+#ifdef	__cplusplus
+extern "C" {
 #endif
 
-#include <stdint.h>
-#include <stdbool.h>
-#include "motor.h"
+#include "sensors.h"
 
-typedef struct {
-    int32_t KiTs_q;
-    int32_t Kp_q;
-    int32_t KdDivTs_q;
-    int32_t Error;
-    int32_t prevError;
-    int32_t Ts;
-} params_t;
-
-typedef struct {
-    int32_t integral; 
-    int32_t derivative;
-    int32_t proportional;
-}components_t;
-
-void params_init(volatile params_t *params,
-    int32_t Ki_q,
-    int32_t Kp_q,
-    int32_t Kd_q,
-    int32_t Error,
-    int32_t prevError,
-    int32_t Ts_us);
-
-extern volatile params_t paramsData;
-extern volatile params_t *params;
-
-extern volatile components_t componentsData;
-extern volatile components_t *components;
-
-void Control_SetKp(int32_t Kp_q);
-void Control_SetKi(int32_t Ki_q);
-void Control_SetKd(int32_t Kd_q);
-void Control_SetTs(int32_t Ts_us);
-void Control_ResetIntegrator(void);
-
-void components_init(volatile components_t *components,
-                     int32_t integral,
-                     int32_t derivative,
-                     int32_t proportional);
-
-int32_t Motor_GetError(volatile params_t *params);
-
-void Motor_SetError(volatile motor_status_t *motor,
-                    volatile params_t *params);
-
-void SetIntegralComponent(volatile params_t *params, volatile components_t *components);
-void SetDerivativeComponent(volatile params_t *params, volatile components_t *components);
-void SetProportionalComponent(volatile params_t *params, volatile components_t *components);
-
-int32_t GetPIDOutput(volatile components_t *components);
-
-#endif /* CONTROL_H */
-/*
-
-typedef struct {
-    float Kp;
-    float Ki;
-    float Kd;
-
-    float Ts;
-
-    float e_k;
-    float e_k_1;
-    float e_k_2;
-
-    float u_k;
-    float u_k_1;
-
-    float out_min;
-    float out_max;
-} PID_t;
-
-
-para el control se pueden usar ambos casos, pero para aplicaciones de control digital es util:
-ecuacion en diferencias
-
-u[k-1]
-e[k]
-e[k-1]
-e[k-2]
-
-u[k] = u[k-1] + q0 ​ek​ + q1 ek-1 + q2 ek - 2;
-
-float PID_Update(PID_t *pid, float setpoint, float position)
+    
+typedef enum
 {
-    pid->e_k = setpoint - position;
+    SETPOINT_ANALOG = 0,
+    SETPOINT_SERIAL
+} setpoint_mode_t;
 
-    float q0 = pid->Kp + pid->Ki * pid->Ts + pid->Kd / pid->Ts;
-    float q1 = -pid->Kp - 2.0f * pid->Kd / pid->Ts;
-    float q2 = pid->Kd / pid->Ts;
+typedef struct
+{
+    int16_t setPoint;
+    int16_t error;
+    int16_t prevError;
+    int16_t output;
+    
+    int32_t integral;
 
-    pid->u_k = pid->u_k_1
-             + q0 * pid->e_k
-             + q1 * pid->e_k_1
-             + q2 * pid->e_k_2;
+    uint16_t kp;
+    uint16_t ki;
+    uint16_t kd;
 
-    if(pid->u_k > pid->out_max) pid->u_k = pid->out_max;
-    if(pid->u_k < pid->out_min) pid->u_k = pid->out_min;
+    setpoint_mode_t mode;
+} control_status_t;
 
-    pid->e_k_2 = pid->e_k_1;
-    pid->e_k_1 = pid->e_k;
-    pid->u_k_1 = pid->u_k;
+extern volatile control_status_t control_data;
+extern volatile control_status_t *ctrl;
 
-    return pid->u_k;
+void controlInit(volatile control_status_t *ctrl, 
+        int16_t setPoint,
+        int16_t error,
+        int16_t prevError,
+        int16_t output,
+        int32_t integral,
+        uint16_t kp,
+        uint16_t ki,
+        uint16_t kd,
+        setpoint_mode_t mode);
+
+
+//this routines will be called on the serial module to avoid multiplying on the PID runtime
+void discretizeKi(volatile control_status_t *ctrl); //updates Ki to ki/Ts
+void discretizeKd(volatile control_status_t *ctrl); //updates Kd to Kd*Ts
+
+//setters and getters for the structure variables
+
+void updateError(volatile control_status_t *ctrl, int16_t position);
+int16_t getError(volatile control_status_t *ctrl);
+
+void updateSetPoint(volatile control_status_t *ctrl, int16_t setPoint);
+int16_t getSetpoint(volatile control_status_t *ctrl);
+
+void updatePIDOutput(volatile control_status_t *ctrl);
+int16_t getOutput(volatile control_status_t *ctrl);
+
+void updateKp(volatile control_status_t *ctrl, uint16_t kp);
+uint16_t getKp(volatile control_status_t *ctrl);
+
+void updateKi(volatile control_status_t *ctrl, uint16_t ki);
+uint16_t getKi(volatile control_status_t *ctrl);
+
+void updateKd(volatile control_status_t *ctrl, uint16_t kd);
+uint16_t getKd(volatile control_status_t *ctrl);
+
+void updateMode(volatile control_status_t *ctrl, setpoint_mode_t mode);
+setpoint_mode_t getMode(volatile control_status_t *ctrl);
+
+
+
+#ifdef	__cplusplus
 }
-*/
+#endif
+
+#endif	/* CONTROL_H */
+

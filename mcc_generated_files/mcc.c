@@ -54,9 +54,11 @@ void SYSTEM_Initialize(void)
     OSCILLATOR_Initialize();
     PWM6_Initialize();
     ADCC_Initialize();
+    TMR3_Initialize();
     TMR2_Initialize();
     TMR1_Initialize();
     EUSART1_Initialize();
+
 }
 
 void OSCILLATOR_Initialize(void)

@@ -2,28 +2,28 @@
  * File:   task.h
  * Author: alejandro
  *
- * Created on May 8, 2026, 10:10 PM
+ * Created on May 17, 2026, 4:42 PM
  */
 
 #ifndef TASK_H
 #define	TASK_H
 
 #ifdef	__cplusplus
-extern "C" 
+extern "C" {
 #endif
     
-typedef enum
-{
-    SETPOINT_SERIAL = 0,
-    SETPOINT_ANALOG = 1
-} setpoint_mode_t;
+#include "sensors.h"
+#include "serial.h"
+#include "control.h"
+#include "motor.h"
+#include "mcc_generated_files/mcc.h"
 
-extern volatile setpoint_mode_t setpoint_mode;
+    void taskInit();
+    void AppTask();
+   
+#ifdef	__cplusplus
+}
+#endif
 
-void App_Init(void);
-void App_ControlTask(void);
-void App_BackgroundTask(void);
-
-    
 #endif	/* TASK_H */
 

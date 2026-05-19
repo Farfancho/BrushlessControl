@@ -1,199 +1,147 @@
-#include <xc.h>
-#include <stdint.h>
-
 #include "control.h"
 
-/*
- * CONTROL.C
- *
- * Convención usada:
- *  - Las ganancias que llegan por serial están escaladas x1000.
- *
- *    Ejemplos:
- *      p1000 -> Kp = 1.000
- *      i20   -> Ki = 0.020
- *      d80   -> Kd = 0.080
- *
- *  - params->Ts está en microsegundos.
- *    Para 150 Hz: Ts = 6667 us aproximadamente.
- *
- *  - Internamente se guardan:
- *      Kp_q      = Kp * 1000
- *      KiTs_q    = Ki * Ts * 1000
- *      KdDivTs_q = (Kd / Ts) * 1000
- *
- *  Así el ciclo de control no divide entre Ts ni multiplica por Ts.
- */
 
-#ifndef GAIN_SCALE
-#define GAIN_SCALE 1000L
-#endif
+#define SAMPLING_RATE 150U
+#define CONTROL_GAIN_SCALE 100L //escalarlo para no usar float
+#define CONTROL_OUTPUT_MAX 4095
+#define CONTROL_INTEGRAL_MAX 20000L
 
-//debug
-//#ifndef CONTROL_OUTPUT_MAX
-//#define CONTROL_OUTPUT_MAX 1023L
-//#endif
-//
-//#ifndef CONTROL_OUTPUT_MIN
-//#define CONTROL_OUTPUT_MIN (-1023L)
-//#endif
+volatile control_status_t control_data;
+volatile control_status_t *ctrl = &control_data;
 
-#define CONTROL_OUTPUT_MAX 150L
-#define CONTROL_OUTPUT_MIN (-150L)
-
-#ifndef CONTROL_DEFAULT_TS_US
-#define CONTROL_DEFAULT_TS_US 6667L
-#endif
-
-volatile params_t paramsData;
-volatile params_t *params = &paramsData;
-
-volatile components_t componentsData;
-volatile components_t *components = &componentsData;
-
-static int32_t clamp_i32(int32_t value, int32_t min, int32_t max)
-{
-    if (value > max)
-    {
-        return max;
-    }
-
-    if (value < min)
-    {
-        return min;
-    }
-
-    return value;
+void controlInit(volatile control_status_t *ctrl, 
+        int16_t setPoint,
+        int16_t error, 
+        int16_t prevError, 
+        int16_t output, 
+        int32_t integral,
+        uint16_t kp, 
+        uint16_t ki, 
+        uint16_t kd,
+        setpoint_mode_t mode){
+    ctrl->setPoint = setPoint;
+    ctrl->error = error;
+    ctrl->prevError = prevError;
+    ctrl->output = output;
+    ctrl->integral = integral;
+    ctrl->kp = kp;
+    ctrl->ki = ki;
+    ctrl->kd = kd;
+    ctrl->mode = mode;
 }
 
-static int32_t safe_Ts_us(int32_t Ts_us)
-{
-    if (Ts_us <= 0)
-    {
-        return CONTROL_DEFAULT_TS_US;
-    }
-
-    return Ts_us;
+void discretizeKi(volatile control_status_t *ctrl){ 
+    ctrl->ki = ctrl->ki / SAMPLING_RATE; //replace later for a bit shift
 }
 
-static int32_t compute_KiTs_q(int32_t Ki_q, int32_t Ts_us)
-{
-    Ts_us = safe_Ts_us(Ts_us);
-
-    /*
-     * Ki_q representa Ki * 1000.
-     * Ts_us / 1000000 convierte microsegundos a segundos.
-     * Resultado queda todavía en escala x1000.
-     */
-    return (int32_t)(((int64_t)Ki_q * (int64_t)Ts_us) / 1000000LL);
+void discretizeKd(volatile control_status_t *ctrl){
+    ctrl->kd = ctrl->kd * SAMPLING_RATE; //replace later for a bit shift
 }
 
-static int32_t compute_KdDivTs_q(int32_t Kd_q, int32_t Ts_us)
-{
-    Ts_us = safe_Ts_us(Ts_us);
-
-    /*
-     * Kd_q representa Kd * 1000.
-     * Dividir por Ts en segundos equivale a multiplicar por 1000000 / Ts_us.
-     * Resultado queda todavía en escala x1000.
-     */
-    return (int32_t)(((int64_t)Kd_q * 1000000LL) / (int64_t)Ts_us);
+void updateSetPoint(volatile control_status_t *ctrl, int16_t setPoint){
+    if(setPoint < 0) {setPoint = 0;}
+    if(setPoint > SENSOR_ADC_MAX) {setPoint = SENSOR_ADC_MAX;}
+    ctrl->setPoint = setPoint;
 }
 
-void params_init(volatile params_t *p,
-                 int32_t Ki_q,
-                 int32_t Kp_q,
-                 int32_t Kd_q,
-                 int32_t Error,
-                 int32_t prevError,
-                 int32_t Ts_us)
-{
-    p->Ts = safe_Ts_us(Ts_us);
-    p->Kp_q = Kp_q;
-    p->KiTs_q = compute_KiTs_q(Ki_q, p->Ts);
-    p->KdDivTs_q = compute_KdDivTs_q(Kd_q, p->Ts);
-    p->Error = Error;
-    p->prevError = prevError;
+int16_t getSetpoint(volatile control_status_t *ctrl){
+    return ctrl->setPoint;
 }
 
-void components_init(volatile components_t *c,
-                     int32_t integral,
-                     int32_t derivative,
-                     int32_t proportional)
-{
-    c->integral = integral;
-    c->derivative = derivative;
-    c->proportional = proportional;
+void updateError(volatile control_status_t *ctrl, int16_t position){
+    ctrl->prevError = ctrl->error;
+    ctrl->error = ctrl->setPoint - position;
 }
 
-void Control_SetKp(int32_t Kp_q)
-{
-    params->Kp_q = Kp_q;
+int16_t getError(volatile control_status_t *ctrl){
+    return ctrl->error;
 }
 
-void Control_SetKi(int32_t Ki_q)
-{
-    params->KiTs_q = compute_KiTs_q(Ki_q, params->Ts);
-}
+//void updatePOutput(volatile control_status_t *ctrl){
+//    int32_t output;
+//    output = ((int32_t)ctrl->error * (int32_t)ctrl->kp)/CONTROL_KP_SCALE;//replace later for a bit shift
+//    
+//    if (output > CONTROL_OUTPUT_MAX){
+//        output = CONTROL_OUTPUT_MAX;
+//    }else if (output < -CONTROL_OUTPUT_MAX){
+//        output = -CONTROL_OUTPUT_MAX;
+//    }
+//    
+//    ctrl->output = (int16_t)output;    
+//}
 
-void Control_SetKd(int32_t Kd_q)
-{
-    params->KdDivTs_q = compute_KdDivTs_q(Kd_q, params->Ts);
-}
-
-void Control_SetTs(int32_t Ts_us)
-{
-    params->Ts = safe_Ts_us(Ts_us);
-}
-
-void Control_ResetIntegrator(void)
-{
-    components->integral = 0;
-}
-
-int32_t Motor_GetError(volatile params_t *p)
-{
-    return p->Error;
-}
-
-void Motor_SetError(volatile motor_status_t *m, volatile params_t *p)
-{
-    p->Error = m->target - m->position;
-}
-
-void SetProportionalComponent(volatile params_t *p, volatile components_t *c)
-{
-    c->proportional = p->Kp_q * p->Error;
-}
-
-void SetIntegralComponent(volatile params_t *p, volatile components_t *c)
-{
-    int32_t newIntegral;
-    int32_t integralMax;
-    int32_t integralMin;
-
-    newIntegral = c->integral + (p->KiTs_q * p->Error);
-
-    integralMax = CONTROL_OUTPUT_MAX * GAIN_SCALE;
-    integralMin = CONTROL_OUTPUT_MIN * GAIN_SCALE;
-
-    c->integral = clamp_i32(newIntegral, integralMin, integralMax);
-}
-
-void SetDerivativeComponent(volatile params_t *p, volatile components_t *c)
-{
-    c->derivative = p->KdDivTs_q * (p->Error - p->prevError);
-}
-
-int32_t GetPIDOutput(volatile components_t *c)
-{
-    int32_t output_q;
+void updatePIDOutput(volatile control_status_t *ctrl){
+    int32_t pTerm;
+    int32_t iTerm;
+    int32_t dTerm;
     int32_t output;
+    int16_t derivative;
+    
+    ctrl->integral += ctrl->error;
+    
+    if (ctrl->integral > CONTROL_INTEGRAL_MAX)
+    {
+        ctrl->integral = CONTROL_INTEGRAL_MAX;
+    }
+    else if (ctrl->integral < -CONTROL_INTEGRAL_MAX)
+    {
+        ctrl->integral = -CONTROL_INTEGRAL_MAX;
+    }
+    
+    derivative = ctrl->error - ctrl->prevError;
+    
+    pTerm = (int32_t)ctrl->kp * (int32_t)ctrl->error;
+    iTerm = (int32_t)ctrl->ki * ctrl->integral;
+    dTerm = (int32_t)ctrl->kd * (int32_t)derivative;
 
-    output_q = c->proportional + c->integral + c->derivative;
-    output = output_q / GAIN_SCALE;
+    output = (pTerm + iTerm + dTerm) / CONTROL_GAIN_SCALE;
 
-    output = clamp_i32(output, CONTROL_OUTPUT_MIN, CONTROL_OUTPUT_MAX);
+    if (output > CONTROL_OUTPUT_MAX)
+    {
+        output = CONTROL_OUTPUT_MAX;
+    }
+    else if (output < -CONTROL_OUTPUT_MAX)
+    {
+        output = -CONTROL_OUTPUT_MAX;
+    }
 
-    return output;
+    ctrl->output = (int16_t)output; 
+    
+}
+
+int16_t getOutput(volatile control_status_t *ctrl){
+    return ctrl->output;
+}
+
+void updateKp (volatile control_status_t *ctrl, uint16_t kp){
+    ctrl->kp = kp;
+}
+
+uint16_t getKp(volatile control_status_t *ctrl){
+    return ctrl->kp;
+} 
+
+void updateMode(volatile control_status_t *ctrl, setpoint_mode_t mode){
+    ctrl->mode = mode;
+}
+setpoint_mode_t getMode(volatile control_status_t *ctrl){
+    return ctrl->mode;
+}
+
+void updateKi(volatile control_status_t *ctrl, uint16_t ki){
+    ctrl->ki = ki;
+}
+uint16_t getKi(volatile control_status_t *ctrl){
+    return ctrl->ki;
+}
+
+void updateKd(volatile control_status_t *ctrl, uint16_t kd){
+    ctrl->kd = kd;
+}
+uint16_t getKd(volatile control_status_t *ctrl){
+    return ctrl->kd;
+}
+
+void resetIntegral(volatile control_status_t *ctrl){
+    ctrl->integral = 0;
 }

@@ -41,7 +41,7 @@
     SOFTWARE.
 */
 
-#include "../mcc_generated_files/mcc.h"
+#include "mcc_generated_files/mcc.h"
 #include "task.h"
 /*
                          Main application
@@ -50,7 +50,7 @@ void main(void)
 {
     // initialize the device
     SYSTEM_Initialize();
-    App_Init();
+    taskInit();
 
     // When using interrupts, you need to set the Global and Peripheral Interrupt Enable bits
     // Use the following macros to:
@@ -66,11 +66,10 @@ void main(void)
 
     // Disable the Peripheral Interrupts
     //INTERRUPT_PeripheralInterruptDisable();
-    
-    while (1)
+
+    while (1) 
     {
-        App_BackgroundTask();
-        // Add your application code
+        AppTask();
     }
 }
 /**

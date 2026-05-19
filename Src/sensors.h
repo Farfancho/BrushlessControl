@@ -2,41 +2,39 @@
  * File:   sensors.h
  * Author: alejandro
  *
- * Created on May 8, 2026, 10:10 PM
+ * Created on May 17, 2026, 1:33 PM
  */
 
 #ifndef SENSORS_H
 #define	SENSORS_H
 
-
-#ifdef __cplusplus
-extern "C" 
+#ifdef	__cplusplus
+extern "C" {
 #endif
-
-
+    
 #include <stdint.h>
-#include <stdbool.h>
-#include "../mcc_generated_files/adcc.h"
+#include "mcc_generated_files/adcc.h"
 
-typedef struct {
-    uint16_t feedback;
-    uint16_t analogInput;    
-}sensors_status_t;
+#define SENSOR_ADC_MAX          4095UL //ADC resolution
 
-extern volatile sensors_status_t sensor_data;
-extern volatile sensors_status_t *sensor;
+typedef struct
+{
+    uint16_t AnSetpoint;
+    uint16_t Position;
+} sensor_status_t;
 
-void sensorsInit(volatile sensors_status_t *sensor,
-                 uint16_t feedback,
-                 uint16_t analogInput);
+extern volatile sensor_status_t sensor_data;
+extern volatile sensor_status_t *sensor;
 
-void setFeedback (adcc_channel_t channel, volatile sensors_status_t *sensor);
-void setAnalogInput (adcc_channel_t channel, volatile sensors_status_t *sensor);
-uint16_t getFeedback (volatile sensors_status_t *sensor);
-uint16_t getAnalogInput (volatile sensors_status_t *sensor);
+void sensorsInit(volatile sensor_status_t *sensor, uint16_t AnSetpoint, uint16_t Position); //initialize
+void updateAnSetpoint(volatile sensor_status_t *sensor, uint16_t AnSetpoint); 
+void updatePosition(volatile sensor_status_t *sensor, uint16_t AnSetpoint);
+uint16_t getAnSetpoint(volatile sensor_status_t *sensor);
+uint16_t getPosition(volatile sensor_status_t *sensor); 
+
+#ifdef	__cplusplus
+}
+#endif
 
 #endif	/* SENSORS_H */
 
-/**
- End of File
-*/

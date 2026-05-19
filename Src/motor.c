@@ -1,50 +1,35 @@
-#include <xc.h> 
-
 #include "motor.h"
+#include "serial.h"
 
-#define PWM_MAX_DUTY 1023
 
-void Motor_init(volatile motor_status_t *motor,
-        uint16_t position,
-        uint16_t target,
-        motor_dir_t direction,
-        uint16_t dutyCycle){
-    motor->position = position;
-    motor->target = target;
-    motor->direction = direction;
-    motor->dutyCycle = dutyCycle;
+void motorInit (){
+    PWM6_LoadDutyValue(0);
 }
 
-volatile motor_status_t motor_data; 
-volatile motor_status_t *motor = &motor_data; 
 
-
-void Motor_ApplyOutput(int32_t output)
-{
-    uint16_t duty;
-
-    if (output > 0)
-    {
-        motor->direction = MOTOR_DIR_CW;
-        duty = (uint16_t)output;
-        DIR_SetHigh();
+void motorApplyOutput(int16_t output){
+    
+    uint16_t dutyCycle;
+    int16_t absOutput;
+    
+    if(output > MOTOR_OUTPUT_LIMIT){
+        output = MOTOR_OUTPUT_LIMIT;
     }
-    else if (output < 0)
-    {
-        motor->direction = MOTOR_DIR_CCW;
-        duty = (uint16_t)(-output);
+    else if (output < -MOTOR_OUTPUT_LIMIT){
+        output = -MOTOR_OUTPUT_LIMIT;
+    }
+    
+    
+    if (output > 0){
         DIR_SetLow();
+        absOutput = output;
+    }else{
+        DIR_SetHigh();
+        absOutput = -output;
     }
-    else
-    {
-        duty = 0;
-    }
-
-    if (duty > PWM_MAX_DUTY)
-    {
-        duty = PWM_MAX_DUTY;
-    }
-
-    motor->dutyCycle = duty;
-    PWM6_LoadDutyValue(duty);
+    
+    dutyCycle = (uint16_t)(((uint32_t)absOutput * MOTOR_MAX_PWM)/ MOTOR_CONTROL_MAX); //replace for bitshift
+    
+    PWM6_LoadDutyValue(dutyCycle);
+    
 }

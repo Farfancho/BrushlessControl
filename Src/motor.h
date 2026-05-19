@@ -1,42 +1,34 @@
+/* 
+ * File:   motor.h
+ * Author: alejandro
+ *
+ * Created on May 18, 2026, 11:39 AM
+ */
+
 #ifndef MOTOR_H
-#define MOTOR_H
+#define	MOTOR_H
 
-
-#ifdef __cplusplus
-extern "C" 
+#ifdef	__cplusplus
+extern "C" {
 #endif
 
 #include <stdint.h>
-#include <stdbool.h>
-#include "../mcc_generated_files/pin_manager.h"
-#include "../mcc_generated_files/pwm6.h"
+#include "mcc_generated_files/pwm6.h"
+#include "mcc_generated_files/pin_manager.h"
+    
+#define MOTOR_MAX_PWM 1023U //max real output (unsigned for dir)
+#define MOTOR_CONTROL_MAX 4095 // max logic output
+#define MOTOR_OUTPUT_LIMIT 1024 //debug for safety
+#define MOTOR_DEADBAND 20 //deadzone
+    
+    void motorInit();
+    void motorApplyOutput(int16_t output);
 
-typedef enum
-{
-    MOTOR_DIR_CW = 0,
-    MOTOR_DIR_CCW = 1
-} motor_dir_t;
 
-typedef struct {
-    uint16_t position;
-    uint16_t target;
-    motor_dir_t direction;
-    uint16_t dutyCycle;//este valor debe ser flotante (?) 
-}motor_status_t;
 
-void Motor_init(volatile motor_status_t *motor,
-    uint16_t position,
-    uint16_t target,
-    motor_dir_t direction,
-    uint16_t dutyCycle
-);
-extern volatile motor_status_t motor_data;
-extern volatile motor_status_t *motor;
+#ifdef	__cplusplus
+}
+#endif
 
-void Motor_ApplyOutput(int32_t output);
+#endif	/* MOTOR_H */
 
-#endif /* MOTOR_H */
-
-/**
- End of File
-*/
