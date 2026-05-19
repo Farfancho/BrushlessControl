@@ -30,6 +30,16 @@ Entre los requisitos principales del sistema se encuentran:
 * transmisión de variables de control en tiempo real.
 * ejecución periódica del control a una frecuencia de muestreo definida.
 
+## Demostración del sistema
+
+<p align="center">
+  <img src="VideoControl.gif" alt="Demostración del control de posición del motor brushless" width="700">
+</p>
+
+<p align="center">
+  <em>Prueba experimental del sistema de control de posición utilizando un motor brushless, potenciómetros de referencia y posición, PWM y comunicación serial.</em>
+</p>
+
 ## Arquitectura general
 
 El sistema se divide en varios bloques funcionales:
